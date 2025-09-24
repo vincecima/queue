@@ -1,0 +1,76 @@
+name: Readwise data export
+on:
+  schedule:
+    # At 00:00 on every 2nd day-of-month.
+    - cron: 0 0 */2 * *
+  workflow_dispatch:
+jobs:
+  export-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            input/
+            export.py
+            pyproject.toml
+            uv.lock
+          sparse-checkout-cone-mode: false
+      - uses: astral-sh/setup-uv@v6
+      - run: uv run ./export.py > input/readwise.json
+        env:
+          READWISE_READER_API_TOKEN: ${{ secrets.readwise_reader_api_token }}
+      - run: |
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Updated Readwise export" || exit 0
+          git push
+  # build-site:
+  #   needs: export-data
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #       with:
+  #         sparse-checkout: |
+  #           input/readwise.json
+  #           input/site.j2
+  #           output/site.html
+  #           pyproject.toml
+  #           site.py
+  #           uv.lock
+  #         sparse-checkout-cone-mode: false
+  #     - uses: astral-sh/setup-uv@v6
+  #     - run: uv run ./site.py > output/site.html
+  #     - run: |
+  #         git config user.name "Automated"
+  #         git config user.email "actions@users.noreply.github.com"
+  #         git pull
+  #         git add -A
+  #         git commit -m "Updated Readwise export" || exit 0
+  #         git push
+  #     - name: Upload site
+  #       uses: actions/upload-pages-artifact@v3
+  #       with:
+  #         path: ./output
+  
+  # build-site:
+  #   needs: export-data
+  #   permissions:
+  #     pages: write
+  #     id-token: write
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Setup Pages
+  #       id: pages
+  #       uses: actions/configure-pages@v5
+  #     - name: Upload artifact
+  #       uses: actions/upload-pages-artifact@v3
+  #       with:
+  #         path: ./site.html
+  #     # - name: Deploy to GitHub Pages
+  #     #   id: deployment
+  #     #   uses: actions/deploy-pages@v4

@@ -1,21 +1,8 @@
 import csv
+import json
 import os
 import requests
 import sys
-
-COLUMNS = [
-    "id",
-    "url",
-    "source_url",
-    "title",
-    "author",
-    "location",
-    "tags",
-    "site_name",
-    "published_date",
-    "image_url",
-    "saved_at",
-]
 
 
 def fetch_reader_document_list_api(token, updated_after=None, location=None):
@@ -42,17 +29,10 @@ def fetch_reader_document_list_api(token, updated_after=None, location=None):
     return full_data
 
 
-def convert_document_to_csv_row(document):
-    return map(lambda col: document[col], COLUMNS)
-
-
 READWISE_READER_API_TOKEN = os.environ.get("READWISE_READER_API_TOKEN")
 if not READWISE_READER_API_TOKEN:
     sys.stderr.write("READWISE_READER_API_TOKEN environment variable required")
     sys.exit(1)
 
 all_data = fetch_reader_document_list_api(READWISE_READER_API_TOKEN)
-
-csv_out = csv.writer(sys.stdout)
-csv_out.writerow(map(lambda col: col, COLUMNS))
-csv_out.writerows(map(convert_document_to_csv_row, all_data))
+print(json.dumps(all_data))

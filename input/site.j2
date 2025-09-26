@@ -15,7 +15,23 @@
         <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
         <script>
             $(document).ready( function () {
-                $('#items').DataTable({});
+                $('#items').DataTable({
+                    ajax: {
+                        url: "/queue/readwise.json",
+                        dataSrc: ''
+                    },
+                    columns: [
+                        { data: 'title', title: 'Title' },
+                        { data: 'location', title: 'Location' },
+                        { data: 'url', render: function (data, type, row, meta) {
+                            return '<a href="' + data + '">Readwise</a>';
+                        }},
+                        { data: 'source_url', render: function (data, type, row, meta) {
+                            return '<a href="' + data + '">Original</a>';
+                        }}
+                    ],
+                    paging: false
+                });
             });
         </script>
     </head>

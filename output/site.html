@@ -23,6 +23,8 @@
                     columns: [
                         { data: 'title', title: 'Title' },
                         { data: 'location', title: 'Location' },
+                        { data: 'published_date', title: 'Published At', render: DataTable.render.date()},
+                        { data: 'saved_at', title: 'Saved At', render: DataTable.render.datetime()},
                         { data: 'url', render: function (data, type, row, meta) {
                             return '<a href="' + data + '">Readwise</a>';
                         }},

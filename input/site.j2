@@ -14,21 +14,14 @@
         </script>
         <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
         <script>
-            let data = '{{ encoded_rows }}';
             $(document).ready( function () {
-                $('#items').DataTable({
-                    data: data
-                });
+                $('#items').DataTable({});
             });
         </script>
     </head>
     <body>
         <table id="items">
             <thead>
-                <tr>
-                    <th>Column 1</th>
-                    <th>Column 2</th>
-                </tr>
             </thead>
             <tbody>
             </tbody>

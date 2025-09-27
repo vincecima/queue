@@ -1,0 +1,52 @@
+name: Readwise data export
+on:
+  schedule:
+    # At 00:00 on every 2nd day-of-month.
+    - cron: 0 0 */2 * *
+  workflow_dispatch:
+jobs:
+  export-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            input/site.j2
+            output/readwise.json
+            output/site.html
+            build.py
+            export.py
+            pyproject.toml
+            uv.lock
+          sparse-checkout-cone-mode: false
+      - uses: astral-sh/setup-uv@v6
+      - run: uv run ./export.py > output/readwise.json
+        env:
+          READWISE_READER_API_TOKEN: ${{ secrets.readwise_reader_api_token }}
+      - run: uv run ./build.py > output/site.html
+      - run: |
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "export-build result" || exit 0
+          git push
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./output
+  deploy-site:
+    needs: export-build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

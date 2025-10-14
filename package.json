@@ -1,0 +1,20 @@
+{
+  "name": "queue",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "",
+    "dev": "bun run index.html",
+    "prod": "bun build --minify --outdir=dist index.html",
+    "export": "bun run export.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "datatables.net-dt": "^2.3.4"
+  }
+}

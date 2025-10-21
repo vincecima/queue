@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Force using the latest commit, not the triggering commit so
+          # we pickup changes made in prior job
+          ref: ${{ github.ref_name }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: ".bun-version"
